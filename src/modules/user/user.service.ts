@@ -1,4 +1,4 @@
-import { TUser } from "./user.interface";
+import { Order, TUser } from "./user.interface";
 import { userModel } from "./user.model";
 
 const createUserIntoDB = async (user: TUser) => {
@@ -31,10 +31,30 @@ const deleteUserFromDB = async (userId: string) => {
   return !result;
 };
 
+const updateOrderFromDB = async (userId: string, body: Order) => {
+  const { productName, price, quantity } = body;
+  const result = await userModel.findOneAndUpdate(
+    { userId },
+    {
+      $push: { orders: { productName, price, quantity } },
+    },
+    { new: true }
+  );
+  return result;
+};
+
+const getSingleOrderFromDB = async (userId: string) => {
+  const result = await userModel.findOne({ userId });
+
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
   updateUserFromDB,
   deleteUserFromDB,
+  updateOrderFromDB,
+  getSingleOrderFromDB,
 };

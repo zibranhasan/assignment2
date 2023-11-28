@@ -110,10 +110,79 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
+const createOrder = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const result = await UserServices.updateOrderFromDB(userId, req.body);
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          code: 404,
+          description: "User not found",
+        },
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Order update successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: {
+        code: 500,
+        description: "Internal server error",
+      },
+    });
+  }
+};
+
+const getSingleOrder = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserServices.getSingleOrderFromDB(userId);
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          code: 404,
+          description: "User not found",
+        },
+      });
+    }
+    return res.json({
+      success: true,
+      message: "Orders fetched successfully",
+      data: {
+        orders: result.orders || [],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: {
+        code: 500,
+        description: "Internal server error",
+      },
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateUser,
   deleteUser,
+  createOrder,
+  getSingleOrder,
 };
